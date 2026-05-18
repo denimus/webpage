@@ -1,0 +1,469 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Unified Loan Amortization & Payoff Analyzer</title>
+        <style>
+            :root {
+                --primary-color: #2b4c7e;
+                --primary-hover: #1d3557;
+                --secondary-color: #457b9d;
+                --accent-color: #e63946;
+                --bg-color: #f8f9fa;
+                --card-bg: #ffffff;
+                --text-color: #2d3748;
+                --border-color: #e2e8f0;
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            }
+
+            body {
+                background-color: var(--bg-color);
+                color: var(--text-color);
+                line-height: 1.6;
+                padding: 20px;
+            }
+
+            .container {
+                max-width: 1350px;
+                margin: 0 auto;
+            }
+
+            header {
+                text-align: center;
+                margin-bottom: 30px;
+                padding: 20px 0;
+                border-bottom: 2px solid var(--border-color);
+            }
+
+            header h1 {
+                color: var(--primary-color);
+                font-size: 2rem;
+                margin-bottom: 10px;
+            }
+
+            header p {
+                color: #718096;
+                font-size: 1rem;
+            }
+
+            .grid-layout {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            @media (min-width: 992px) {
+                .grid-layout {
+                    grid-template-columns: 300px 1fr;
+                }
+            }
+
+            .card {
+                background: var(--card-bg);
+                border-radius: 8px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                padding: 24px;
+                border: 1px solid var(--border-color);
+                margin-bottom: 25px;
+            }
+
+            .card h2 {
+                color: var(--primary-color);
+                font-size: 1.25rem;
+                margin-bottom: 20px;
+                padding-bottom: 8px;
+                border-bottom: 2px solid var(--border-color);
+            }
+
+            .input-group {
+                margin-bottom: 18px;
+            }
+
+            .input-group label {
+                display: block;
+                font-weight: 600;
+                margin-bottom: 6px;
+                font-size: 0.9rem;
+            }
+
+            .input-wrapper {
+                position: relative;
+                display: flex;
+                align-items: center;
+            }
+
+            .input-prefix {
+                position: absolute;
+                left: 12px;
+                color: #a0aec0;
+                font-weight: bold;
+            }
+
+            .input-group input {
+                width: 100%;
+                padding: 10px 12px;
+                border: 1px solid #cbd5e0;
+                border-radius: 6px;
+                font-size: 1rem;
+                transition: all 0.2s;
+            }
+
+            .input-group input.has-prefix {
+                padding-left: 28px;
+            }
+
+            .input-group input:focus {
+                outline: none;
+                border-color: var(--secondary-color);
+                box-shadow: 0 0 0 3px rgba(69, 123, 157, 0.2);
+            }
+
+            button {
+                width: 100%;
+                background-color: var(--primary-color);
+                color: white;
+                border: none;
+                padding: 12px;
+                font-size: 1rem;
+                font-weight: bold;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+            button:hover {
+                background-color: var(--primary-hover);
+            }
+
+            .summary-metrics {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                margin-bottom: 25px;
+            }
+
+            @media (min-width: 600px) {
+                .summary-metrics {
+                    grid-template-columns: repeat(4, 1fr);
+                }
+            }
+
+            .metric-box {
+                background: #f1f5f9;
+                padding: 15px;
+                border-radius: 6px;
+                border-left: 4px solid var(--secondary-color);
+            }
+
+            .metric-box.highlight {
+                border-left-color: var(--accent-color);
+            }
+
+            .metric-label {
+                font-size: 0.8rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: #64748b;
+                font-weight: 600;
+            }
+
+            .metric-value {
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: #1e293b;
+                margin-top: 4px;
+            }
+
+            .table-responsive {
+                overflow-x: hidden;
+                max-height: 600px;
+                overflow-y: auto;
+                        border: 1px solid var(--border-color);
+                        border-radius: 6px;
+                    }
+
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        text-align: left;
+                        font-size: 0.9rem;
+                    }
+
+                    th {
+                    background-color: #f1f5f9;
+                    color: #475569;
+                    font-weight: 600;
+                    padding: 12px 8px; /* Slightly tighter side padding to free up space */
+                    position: sticky;
+                    top: 0;
+                    z-index: 10;
+                    box-shadow: 0 1px 0 var(--border-color);
+                    /* FIXES FOR TEXT CROPPING: */
+                    white-space: normal;    /* Allows text to wrap to a new line safely */
+                    word-wrap: break-word;  /* Breaks long words if they are too tight */
+                    vertical-align: bottom; /* Keeps headers clean if some wrap to 2 lines */
+                    }
+
+                    td {
+                        padding: 10px 12px;
+                        border-bottom: 1px solid var(--border-color);
+                    }
+
+                    tr:hover td {
+                background-color: #f8fafc;
+            }
+
+            .col-divider {
+                border-left: 2px dashed #cbd5e0 !important;
+            }
+
+            .savings-text {
+                color: #16a34a;
+                font-weight: bold;
+            }
+
+            .info-tip {
+                margin-top: 15px;
+                background-color: #eff6ff;
+                border: 1px solid #bfdbfe;
+                padding: 12px;
+                border-radius: 6px;
+                font-size: 0.85rem;
+                color: #1e40af;
+            }
+
+            .bar-container {
+                display: flex;
+                align-items: center;
+                width: 90px;
+                background: #e2e8f0;
+                border-radius: 4px;
+                height: 14px;
+                overflow: hidden;
+            }
+            .bar-principal {
+                background-color: #457b9d;
+                height: 100%;
+            }
+            .bar-interest {
+                background-color: #e63946;
+                height: 100%;
+            }
+        </style>
+    </head>
+    <body>
+
+    <div class="container">
+        <header>
+            <h1>Unified Loan Amortization & Early Payoff Analyzer</h1>
+            <p>monthly equity shifts side-by-side with the exact execution metrics to kill the loan early.</p>
+        </header>
+
+        <div class="grid-layout">
+            <!-- Input Panel -->
+            <div>
+                <div class="card">
+                    <h2>Parameters</h2>
+                    <div class="input-group">
+                        <label for="loanAmount">Loan Principal ($)</label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">$</span>
+                            <input type="number" id="loanAmount" class="has-prefix" value="30000" min="100" step="100">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="apr">APR (%)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="apr" value="7.0" min="0" max="100" step="0.1">
+                            <span class="input-prefix" style="left: auto; right: 190px;">%</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="term">Term (months)</label>
+                        <input type="number" id="term" value="60" min="1" step="1">
+                    </div>
+
+                    <button onclick="calculateLoan()">Analyze Matrix</button>
+                    
+                    <div class="info-tip">
+                        <strong>Артур:</strong> вот пример калькулятора
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Panel -->
+            <div>
+                <div class="card" style="margin-bottom:0;">
+                    <h2>Baseline Overview</h2>
+                    <div class="summary-metrics">
+                        <div class="metric-box">
+                            <div class="metric-label">Monthly Payment</div>
+                            <div class="metric-value" id="lblMonthlyPayment">$0.00</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-label">Total Amount Paid</div>
+                            <div class="metric-value" id="lblTotalPaid">$0.00</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-label">Total Interest</div>
+                            <div class="metric-value" id="lblTotalInterest">$0.00</div>
+                        </div>
+                        <div class="metric-box highlight">
+                            <div class="metric-label">Nominal Interest %</div>
+                            <div class="metric-value" id="lblNominalPercent">0.00%</div>
+                        </div>
+                    </div>
+
+                    <h2>Chronological Matrix</h2>
+                    <div class="table-responsive">
+                        <table id="masterTable">
+                            <thead>
+                                <tr>
+                                    <th colspan="5" style="background-color: #ebf8ff; text-align: center; color: #2b6cb0; font-weight:700;">AMORTIZATION SCHEDULE</th>
+                                    <th colspan="4" class="col-divider" style="background-color: #f0fff4; text-align: center; color: #22543d; font-weight:700;">PAYOFF ON SPECIFIC MONTH</th>
+                                </tr>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Equity Split</th>
+                                    <th>To Principal</th>
+                                    <th>To Interest</th>
+                                    <th>Rem. Balance</th>
+                                    
+                                    <th class="col-divider">Payment to Close Out</th>
+                                    <th>Interest Paid</th>
+                                    <th>Effective Int %</th>
+                                    <th>Interest Saved</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateLoan() {
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+            const apr = parseFloat(document.getElementById('apr').value);
+            const originalMonths = parseInt(document.getElementById('term').value);
+
+            if (isNaN(loanAmount) || isNaN(apr) || isNaN(originalMonths) || loanAmount <= 0 || originalMonths <= 0) {
+                alert("Please enter valid positive numbers.");
+                return;
+            }
+
+            let monthlyPayment = 0;
+            let totalPaid = 0;
+            let totalInterest = 0;
+            let totalInterestPercent = 0;
+            const monthlyRate = (apr / 100) / 12;
+
+            if (apr === 0) {
+                monthlyPayment = loanAmount / originalMonths;
+                totalPaid = loanAmount;
+                totalInterest = 0;
+            } else {
+                monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, originalMonths)) / (Math.pow(1 + monthlyRate, originalMonths) - 1);
+                totalPaid = monthlyPayment * originalMonths;
+                totalInterest = totalPaid - loanAmount;
+                totalInterestPercent = (totalInterest / loanAmount) * 100;
+            }
+
+            document.getElementById('lblMonthlyPayment').innerText = formatCurrency(monthlyPayment);
+            document.getElementById('lblTotalPaid').innerText = formatCurrency(totalPaid);
+            document.getElementById('lblTotalInterest').innerText = formatCurrency(totalInterest);
+            document.getElementById('lblNominalPercent').innerText = totalInterestPercent.toFixed(2) + '%';
+
+            const masterBody = document.querySelector('#masterTable tbody');
+            masterBody.innerHTML = '';
+
+            let currentBalance = loanAmount;
+            let runningInterestPaid = 0;
+
+            for (let m = 1; m <= originalMonths; m++) {
+                let intPayment = 0;
+                let prinPayment = 0;
+
+                if (apr > 0) {
+                    intPayment = currentBalance * monthlyRate;
+                    if (m === originalMonths) {
+                        prinPayment = currentBalance;
+                    } else {
+                        prinPayment = monthlyPayment - intPayment;
+                    }
+                } else {
+                    prinPayment = monthlyPayment;
+                }
+
+                runningInterestPaid += intPayment;
+
+                const rowTotal = prinPayment + intPayment;
+                const prinPct = (prinPayment / rowTotal) * 100;
+                const intPct = (intPayment / rowTotal) * 100;
+
+                // CORRECTED PAYOFF LOGIC: 
+                // Total payment required to kill the loan right now = current interest due + the current balance before this month's principal deduction.
+                const payoffPayment = currentBalance + intPayment; 
+                const totalInterestIfPaidOffHere = runningInterestPaid;
+                const effectiveInterestPercent = (totalInterestIfPaidOffHere / loanAmount) * 100;
+                const futureInterestSaved = totalInterest - totalInterestIfPaidOffHere;
+
+                // Deduct principal for the NEXT row's tracking balance
+                currentBalance -= prinPayment;
+                if (currentBalance < 0) currentBalance = 0;
+
+                const isBaseline = (m === originalMonths);
+                const row = document.createElement('tr');
+                
+                if (isBaseline) {
+                    row.style.backgroundColor = '#f1f5f9';
+                    row.style.borderTop = '2px solid #cbd5e0';
+                    row.style.borderBottom = '2px solid #cbd5e0';
+                    row.style.fontWeight = '600';
+                }
+
+                row.innerHTML = `
+                    <!-- Amortization Group -->
+                    <td><strong>${m}</strong></td>
+                    <td>
+                        <div class="bar-container" title="Principal: ${prinPct.toFixed(1)}% | Interest: ${intPct.toFixed(1)}%">
+                            <div class="bar-principal" style="width: ${prinPct}%"></div>
+                            <div class="bar-interest" style="width: ${intPct}%"></div>
+                        </div>
+                    </td>
+                    <td>${formatCurrency(prinPayment)}</td>
+                    <td style="color: #c53030;">${formatCurrency(intPayment)}</td>
+                    <td><strong>${formatCurrency(currentBalance)}</strong></td>
+                    
+                    <!-- Corrected Early Payoff Group -->
+                    <td class="col-divider" style="color: #2b6cb0; font-weight: 600;">${formatCurrency(payoffPayment)}</td>
+                    <td>${formatCurrency(totalInterestIfPaidOffHere)}</td>
+                    <td>${effectiveInterestPercent.toFixed(2)}%</td>
+                    <td class="savings-text" style="${isBaseline ? 'color:#64748b;' : ''}">
+                        ${isBaseline ? 'none' : formatCurrency(futureInterestSaved)}
+                    </td>
+                `;
+                masterBody.appendChild(row);
+            }
+        }
+
+        function formatCurrency(num) {
+            return '$' + num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        window.onload = calculateLoan;
+    </script>
+
+    </body>
+    </html>
