@@ -107,7 +107,7 @@
         }
 
         .input-group input {
-            width: 100%;
+            width: 100;
             padding: 10px 12px;
             border: 1px solid #cbd5e0;
             border-radius: 6px;
@@ -126,7 +126,7 @@
         }
 
         button {
-            width: 100%;
+            width: 100;
             background-color: var(--primary-color);
             color: white;
             border: none;
@@ -190,7 +190,7 @@
         }
 
         table {
-            width: 100%;
+            width: 100;
             border-collapse: collapse;
             text-align: left;
             font-size: 0.9rem;
@@ -250,7 +250,7 @@
         }
         .bar-principal {
             background-color: #457b9d;
-            height: 100%;
+            height: 100;
         }
         .bar-interest {
             background-color: #e63946;
@@ -275,21 +275,18 @@
                         <label for="loanAmount">Loan Principal ($)</label>
                         <div class="input-wrapper">
                             <span class="input-prefix">$</span>
-                            <input type="number" id="loanAmount" class="has-prefix" value="30000" min="100" step="100">
+                            <input type="number" id="loanAmount" class="has-prefix" value="50000" min="1000" max="100000000" step="1000">
                         </div>
                     </div>
 
                     <div class="input-group">
                         <label for="apr">APR (%)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="apr" value="7.0" min="0" max="100" step="0.1">
-                            <span class="input-prefix" style="left: auto; right: 190px;">%</span>
-                        </div>
+                        <input type="number" id="apr" value="7.0" min="0" max="50" step="0.01">
                     </div>
 
                     <div class="input-group">
                         <label for="term">Term (months)</label>
-                        <input type="number" id="term" value="60" min="1" step="1">
+                        <input type="number" id="term" value="60" min="0" max="600"step="12">
                     </div>
 
                     <button onclick="calculateLoan()">Analyze Matrix</button>
