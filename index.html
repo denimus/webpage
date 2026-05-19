@@ -232,10 +232,6 @@
             background-color: #f8fafc;
         }
 
-        .col-divider {
-            border-left: 2px dashed #cbd5e0 !important;
-        }
-
         .savings-text {
             color: #16a34a;
             font-weight: bold;
@@ -251,21 +247,30 @@
             color: #1e40af;
         }
 
+        /* STACKED CELL CONTAINER */
+        .stacked-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            justify-content: center;
+        }
+
         /* ULTRA NARROW EQUITY SPLIT METRIC BAR */
         .bar-container {
             display: flex;
             align-items: center;
-            width: 40px; /* Highly narrowed down from 90px */
+            width: 100%; /* Spans across the text width above it */
+            max-width: 80px; /* Highly narrowed footprint */
             background: #e2e8f0;
             border-radius: 2px;
-            height: 8px;
+            height: 6px;
             overflow: hidden;
         }
         
         @media (min-width: 768px) {
             .bar-container {
-                width: 70px;
-                height: 12px;
+                max-width: 100px;
+                height: 8px;
             }
         }
 
@@ -278,13 +283,10 @@
             height: 100%;
         }
 
-        /* Shorten long header strings dynamically via CSS on narrow windows */
-        .hdr-long { display: inline; }
-        .hdr-short { display: none; }
-
-        @media (max-width: 767px) {
-            .hdr-long { display: none; }
-            .hdr-short { display: inline; }
+        /* Subtle gray divider for combined values */
+        .combined-divider {
+            color: #cbd5e0;
+            margin: 0 3px;
         }
     </style>
 </head>
@@ -353,32 +355,12 @@
                         <table id="masterTable">
                             <thead>
                                 <tr>
-                                    <th colspan="5" style="background-color: #ebf8ff; text-align: center; color: #2b6cb0; font-weight:700;">AMORTIZATION SCHEDULE</th>
-                                    <th colspan="4" class="col-divider" style="background-color: #f0fff4; text-align: center; color: #22543d; font-weight:700;">PAYOFF ON SPECIFIC MONTH</th>
-                                </tr>
-                                <tr>
                                     <th>#</th>
-                                    <th>Split</th>
-                                    <th>Principal</th>
-                                    <th>Interest</th>
-                                    <th>Balance</th>
-                                    
-                                    <th class="col-divider">
-                                        <span class="hdr-long">Payment to Close Out</span>
-                                        <span class="hdr-short">Payoff</span>
-                                    </th>
-                                    <th>
-                                        <span class="hdr-long">Interest Paid</span>
-                                        <span class="hdr-short">Int Paid</span>
-                                    </th>
-                                    <th>
-                                        <span class="hdr-long">Effective Int %</span>
-                                        <span class="hdr-short">Eff Int %</span>
-                                    </th>
-                                    <th>
-                                        <span class="hdr-long">Interest Saved</span>
-                                        <span class="hdr-short">Saved</span>
-                                    </th>
+                                    <th>Principal / Interest</th>
+                                    <th>Payoff</th>
+                                    <th>Int. Paid</th>
+                                    <th>Eff. Int.</th>
+                                    <th>Saved</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -467,27 +449,20 @@
 
                 const isBaseline = (m === originalMonths);
                 const row = document.createElement('tr');
-                
-                if (isBaseline) {
-                    row.style.backgroundColor = '#f1f5f9';
-                    row.style.borderTop = '2px solid #cbd5e0';
-                    row.style.borderBottom = '2px solid #cbd5e0';
-                    row.style.fontWeight = '600';
-                }
 
                 row.innerHTML = `
                 <td><strong>${m}</strong></td>
                 <td>
-                    <div class="bar-container" title="Principal: ${prinPct.toFixed(1)}% | Interest: ${intPct.toFixed(1)}%">
-                        <div class="bar-principal" style="width: ${prinPct}%"></div>
-                        <div class="bar-interest" style="width: ${intPct}%"></div>
+                    <div class="stacked-cell">
+                        <div>${formatCurrency(prinPayment)}<span class="combined-divider">/</span><span style="color: #c53030;">${formatCurrency(intPayment)}</span></div>
+                        <div class="bar-container" title="Principal: ${prinPct.toFixed(1)}% | Interest: ${intPct.toFixed(1)}%">
+                            <div class="bar-principal" style="width: ${prinPct}%"></div>
+                            <div class="bar-interest" style="width: ${intPct}%"></div>
+                        </div>
                     </div>
                 </td>
-                <td>${formatCurrency(prinPayment)}</td>
-                <td style="color: #c53030;">${formatCurrency(intPayment)}</td>
-                <td><strong>${formatCurrency(currentBalance)}</strong></td>
                     
-                <td class="col-divider" style="color: #2b6cb0; font-weight: 600;">${formatCurrency(payoffPayment)}</td>
+                <td style="color: #2b6cb0; font-weight: 600;">${formatCurrency(payoffPayment)}</td>
                 <td>${formatCurrency(totalInterestIfPaidOffHere)}</td>
                 <td>${effectiveInterestPercent.toFixed(2)}%</td>
                 <td class="savings-text" style="${isBaseline ? 'color:#64748b;' : ''}">
