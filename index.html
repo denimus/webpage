@@ -53,16 +53,11 @@
             font-size: 1rem;
         }
 
+        /* Combined Parameters & Overview vertically on all screen sizes */
         .grid-layout {
             display: grid;
             grid-template-columns: 1fr;
             gap: 25px;
-        }
-
-        @media (min-width: 992px) {
-            .grid-layout {
-                grid-template-columns: 300px 1fr;
-            }
         }
 
         .card {
@@ -107,7 +102,7 @@
         }
 
         .input-group input {
-            width: 100;
+            width: 100%;
             padding: 10px 12px;
             border: 1px solid #cbd5e0;
             border-radius: 6px;
@@ -126,7 +121,7 @@
         }
 
         button {
-            width: 100;
+            width: 100%;
             background-color: var(--primary-color);
             color: white;
             border: none;
@@ -181,16 +176,17 @@
             margin-top: 4px;
         }
 
+        /* FIX: Removed max-height and overflow-y to merge matrix scrollbar with page scrollbar.
+           Kept overflow-x: auto so the massive table safely scrolls sideways on narrow mobile screens. 
+        */
         .table-responsive {
-            overflow-x: hidden;
-            max-height: 600px;
-            overflow-y: auto;
+            overflow-x: auto;
             border: 1px solid var(--border-color);
             border-radius: 6px;
         }
 
         table {
-            width: 100;
+            width: 100%;
             border-collapse: collapse;
             text-align: left;
             font-size: 0.9rem;
@@ -200,15 +196,14 @@
             background-color: #f1f5f9;
             color: #475569;
             font-weight: 600;
-            padding: 12px 8px; /* Slightly tighter side padding to free up space */
+            padding: 12px 8px;
             position: sticky;
             top: 0;
             z-index: 10;
             box-shadow: 0 1px 0 var(--border-color);
-            /* FIXES FOR TEXT CROPPING: */
-            white-space: normal;    /* Allows text to wrap to a new line safely */
-            word-wrap: break-word;  /* Breaks long words if they are too tight */
-            vertical-align: bottom; /* Keeps headers clean if some wrap to 2 lines */
+            white-space: normal;
+            word-wrap: break-word;
+            vertical-align: bottom;
         }
 
         td {
@@ -250,7 +245,7 @@
         }
         .bar-principal {
             background-color: #457b9d;
-            height: 100;
+            height: 100%;
         }
         .bar-interest {
             background-color: #e63946;
@@ -267,7 +262,6 @@
         </header>
 
         <div class="grid-layout">
-            <!-- Input Panel -->
             <div>
                 <div class="card">
                     <h2>Parameters</h2>
@@ -286,7 +280,7 @@
 
                     <div class="input-group">
                         <label for="term">Term (months)</label>
-                        <input type="number" id="term" value="60" min="0" max="600"step="12">
+                        <input type="number" id="term" value="60" min="0" max="600" step="12">
                     </div>
 
                     <button onclick="calculateLoan()">Analyze Matrix</button>
@@ -297,7 +291,6 @@
                 </div>
             </div>
 
-            <!-- Output Panel -->
             <div>
                 <div class="card" style="margin-bottom:0;">
                     <h2>Baseline Overview</h2>
@@ -409,14 +402,11 @@
                 const prinPct = (prinPayment / rowTotal) * 100;
                 const intPct = (intPayment / rowTotal) * 100;
 
-            // CORRECTED PAYOFF LOGIC: 
-            // Total payment required to kill the loan right now = current interest due + the current balance before this month's principal deduction.
                 const payoffPayment = currentBalance + intPayment; 
                 const totalInterestIfPaidOffHere = runningInterestPaid;
                 const effectiveInterestPercent = (totalInterestIfPaidOffHere / loanAmount) * 100;
                 const futureInterestSaved = totalInterest - totalInterestIfPaidOffHere;
 
-            // Deduct principal for the NEXT row's tracking balance
                 currentBalance -= prinPayment;
                 if (currentBalance < 0) currentBalance = 0;
 
@@ -431,7 +421,6 @@
                 }
 
                 row.innerHTML = `
-                <!-- Amortization Group -->
                 <td><strong>${m}</strong></td>
                 <td>
                     <div class="bar-container" title="Principal: ${prinPct.toFixed(1)}% | Interest: ${intPct.toFixed(1)}%">
@@ -443,7 +432,6 @@
                 <td style="color: #c53030;">${formatCurrency(intPayment)}</td>
                 <td><strong>${formatCurrency(currentBalance)}</strong></td>
                     
-                <!-- Corrected Early Payoff Group -->
                 <td class="col-divider" style="color: #2b6cb0; font-weight: 600;">${formatCurrency(payoffPayment)}</td>
                 <td>${formatCurrency(totalInterestIfPaidOffHere)}</td>
                 <td>${effectiveInterestPercent.toFixed(2)}%</td>
